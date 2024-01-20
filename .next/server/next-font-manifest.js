@@ -1,0 +1,1 @@
+self.__NEXT_FONT_MANIFEST='{"pages":{},"app":{"/Users/mno/Documents/Projekte/mnozdratchen_ai_knowledge/mnozdratchev-ai-knowledge/src/app/layout":["static/media/c9a5bc6a7c948fb0-s.p.woff2"]},"appUsingSizeAdjust":true,"pagesUsingSizeAdjust":false}';
