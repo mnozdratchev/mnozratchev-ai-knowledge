@@ -24,9 +24,17 @@ jobs:
       - name: npm install, build, and test
         run: |
           npm install
-          npm run build
-          mv ./build/static ./build/standalone/build
-          mv ./public ./build/standalone
+          npm run build --if-present
+          npm run test --if-present
+
+      - name: Zip artifact for deployment
+        run: zip release.zip ./* -r
+
+      - name: Upload artifact for deployment job
+        uses: actions/upload-artifact@v3
+        with:
+          name: node-app
+          path: release.zip
 
   deploy:
     runs-on: ubuntu-latest
@@ -38,12 +46,20 @@ jobs:
       id-token: write #This is required for requesting the JWT
 
     steps:
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v3
+        with:
+          name: node-app
+
+      - name: Unzip artifact for deployment
+        run: unzip release.zip
+      
       - name: Login to Azure
         uses: azure/login@v1
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_C21D1E0B515544FAA8AF6F3138CBDBB2 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_AEC8423772EF4373846234E78075D6B5 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_6D3519B6883045C1B0FEE44FA40AB3CE }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_BC8E5DFE6A3946108AF18B8069952BF8 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_A2B84886BD82462683654AAD0DAE37C2 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_4557F933613D4BCDACA04DAB30793D6F }}
 
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
@@ -51,5 +67,5 @@ jobs:
         with:
           app-name: 'mno-knowledge-ui'
           slot-name: 'Production'
-          package: ./build/standalone
+          package: .
           
