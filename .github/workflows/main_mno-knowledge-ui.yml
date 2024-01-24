@@ -28,6 +28,14 @@ jobs:
           mv ./build/static ./build/standalone/build
           mv ./public ./build/standalone
 
+      - name: 'Deploy to Azure Web App'
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'mno-knowledge-ui'
+          slot-name: 'Production'
+          package: ./build/standalone
+
   deploy:
     runs-on: ubuntu-latest
     needs: build
@@ -44,11 +52,3 @@ jobs:
           client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_BC8E5DFE6A3946108AF18B8069952BF8 }}
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_A2B84886BD82462683654AAD0DAE37C2 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_4557F933613D4BCDACA04DAB30793D6F }}
-
-      - name: 'Deploy to Azure Web App'
-        id: deploy-to-webapp
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: 'mno-knowledge-ui'
-          slot-name: 'Production'
-          package: ./build/standalone
