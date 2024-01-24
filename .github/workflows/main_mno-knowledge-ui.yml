@@ -1,12 +1,9 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
-name: Build and deploy Node.js app to Azure Web App - mno-knowledge-ui
+name: Build and deploy Node.js app to Azure Web App - didik-medium
 
 on:
   push:
     branches:
-      - main
+      - development
   workflow_dispatch:
 
 jobs:
@@ -14,28 +11,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v2
 
       - name: Set up Node.js version
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v1
         with:
-          node-version: '20.x'
+          node-version: '18.x'
 
       - name: npm install, build, and test
         run: |
           npm install
-          npm run build
-          mv ./build/static ./build/standalone/build
-          mv ./public ./build/standalone
+          npm run build --if-present
+          npm run test --if-present
 
-      - name: 'Deploy to Azure Web App'
-        id: deploy-to-webapp
-        uses: azure/webapps-deploy@v2
+      - name: Upload artifact for deployment job
+        uses: actions/upload-artifact@v2
         with:
-          app-name: 'mno-knowledge-ui'
-          slot-name: 'Production'
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          package: ./build/standalone
+          name: node-app
+          path: .
 
   deploy:
     runs-on: ubuntu-latest
@@ -43,13 +36,18 @@ jobs:
     environment:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-    permissions:
-      id-token: write #This is required for requesting the JWT
 
     steps:
-      - name: Login to Azure
-        uses: azure/login@v1
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_BC8E5DFE6A3946108AF18B8069952BF8 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_A2B84886BD82462683654AAD0DAE37C2 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_4557F933613D4BCDACA04DAB30793D6F }}
+          name: node-app
+
+      - name: 'Deploy to Azure Web App'
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'didik-medium'
+          slot-name: 'Production'
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: .
