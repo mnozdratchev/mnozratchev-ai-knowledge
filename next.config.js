@@ -4,10 +4,6 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 })
 
 /** @type {import('next').NextConfig} */
-const nextConfig = {
-    reactStrictMode: true,
-    distDir : "build",
-    output: "standalone"
-}
+const nextConfig = {}
 
 module.exports = withBundleAnalyzer(nextConfig)
