@@ -34,6 +34,7 @@ jobs:
         with:
           app-name: 'mno-knowledge-ui'
           slot-name: 'Production'
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_XXXXXXXXXXXXXX }}
           package: ./build/standalone
 
   deploy:
